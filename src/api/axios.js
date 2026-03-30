@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Use env var in prod
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api', // Use env var in prod
   headers: {
     'Content-Type': 'application/json',
   },
@@ -35,5 +35,8 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Add timeout
+api.defaults.timeout = 10000; // 10 seconds
 
 export default api;

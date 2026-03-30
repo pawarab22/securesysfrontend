@@ -2,18 +2,51 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Mail, Lock } from 'lucide-react';
+import { VALIDATION } from '../constants';
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirm, setConfirm] = useState('');
     const [localError, setLocalError] = useState('');
+    const [passwordStrength, setPasswordStrength] = useState(0);
     const { register, loading, error } = useAuth();
     const navigate = useNavigate();
+
+    const validateEmail = (email) => {
+        return VALIDATION.EMAIL_REGEX.test(email);
+    };
+
+    const validatePassword = (password) => {
+        const minLength = password.length >= VALIDATION.PASSWORD_MIN_LENGTH;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumbers = /\d/.test(password);
+        const hasSpecial = /[!@#$%^&*]/.test(password);
+        
+        const strength = [minLength, hasUppercase, hasLowercase, hasNumbers, hasSpecial].filter(Boolean).length;
+        setPasswordStrength(strength);
+        return strength >= 3; // At least fair strength
+    };
+
+    const handlePasswordChange = (value) => {
+        setPassword(value);
+        validatePassword(value);
+    };
 
     const onSubmit = async (e) => {
         e.preventDefault();
         setLocalError('');
+        
+        if (!validateEmail(email)) {
+            setLocalError('Please enter a valid email address');
+            return;
+        }
+        
+        if (!validatePassword(password)) {
+            setLocalError('Password must be at least 8 characters with uppercase, lowercase, numbers, and special characters');
+            return;
+        }
         
         if (password !== confirm) {
             setLocalError('Passwords do not match');
@@ -64,11 +97,20 @@ const Register = () => {
                                 className="form-input" 
                                 style={{ paddingLeft: '2.5rem' }}
                                 value={password} 
-                                onChange={(e) => setPassword(e.target.value)} 
+                                onChange={(e) => handlePasswordChange(e.target.value)} 
                                 required 
-                                minLength={6}
+                                minLength={VALIDATION.PASSWORD_MIN_LENGTH}
                             />
                         </div>
+                        {password && (
+                            <div style={{ 
+                                marginTop: '0.5rem', 
+                                fontSize: '0.875rem', 
+                                color: passwordStrength < 3 ? 'var(--danger-color)' : passwordStrength === 5 ? 'var(--success-color, green)' : 'orange' 
+                            }}>
+                                Strength: {['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'][passwordStrength]}
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group" style={{ textAlign: 'left', marginBottom: '2rem' }}>
@@ -82,7 +124,7 @@ const Register = () => {
                                 value={confirm} 
                                 onChange={(e) => setConfirm(e.target.value)} 
                                 required 
-                                minLength={6}
+                                minLength={VALIDATION.PASSWORD_MIN_LENGTH}
                             />
                         </div>
                     </div>

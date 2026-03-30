@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { VALIDATION } from '../constants';
 
 const NoteForm = ({ currentNote, onSave, onCancel }) => {
     const [title, setTitle] = useState('');
@@ -14,9 +15,29 @@ const NoteForm = ({ currentNote, onSave, onCancel }) => {
         }
     }, [currentNote]);
 
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if ((title.trim() || content.trim()) && !currentNote) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes!';
+            }
+        };
+        
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [title, content, currentNote]);
+
     const onSubmit = (e) => {
         e.preventDefault();
         if (!title.trim()) return;
+        if (title.length > VALIDATION.TITLE_MAX_LENGTH) {
+            alert(`Title must be less than ${VALIDATION.TITLE_MAX_LENGTH} characters`);
+            return;
+        }
+        if (content.length > VALIDATION.CONTENT_MAX_LENGTH) {
+            alert(`Content must be less than ${VALIDATION.CONTENT_MAX_LENGTH} characters`);
+            return;
+        }
         
         onSave({ 
             id: currentNote?.id, 
@@ -46,7 +67,11 @@ const NoteForm = ({ currentNote, onSave, onCancel }) => {
                         onChange={(e) => setTitle(e.target.value)} 
                         placeholder="Enter title"
                         required 
+                        maxLength={VALIDATION.TITLE_MAX_LENGTH}
                     />
+                    <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                        {title.length}/{VALIDATION.TITLE_MAX_LENGTH}
+                    </small>
                 </div>
                 <div className="form-group">
                     <label className="form-label">Note Content</label>
@@ -57,7 +82,11 @@ const NoteForm = ({ currentNote, onSave, onCancel }) => {
                         onChange={(e) => setContent(e.target.value)} 
                         placeholder="Enter note content..."
                         style={{ resize: 'vertical' }}
+                        maxLength={VALIDATION.CONTENT_MAX_LENGTH}
                     ></textarea>
+                    <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                        {content.length}/{VALIDATION.CONTENT_MAX_LENGTH}
+                    </small>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                     {currentNote && (

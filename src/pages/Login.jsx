@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
@@ -7,8 +7,28 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const { login, loading, error } = useAuth();
+    const [blockCount, setBlockCount] = useState(0);
+    const { login, loading, error, loginBlockUntil } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!loginBlockUntil) {
+            setBlockCount(0);
+            return;
+        }
+
+        const update = () => {
+            const seconds = Math.max(0, Math.ceil((loginBlockUntil - Date.now()) / 1000));
+            setBlockCount(seconds);
+            if (seconds <= 0) {
+                clearInterval(timer);
+            }
+        };
+
+        update();
+        const timer = setInterval(update, 1000);
+        return () => clearInterval(timer);
+    }, [loginBlockUntil]);
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -78,7 +98,12 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem', padding: '0.75rem' }} disabled={loading}>
+                    {blockCount > 0 && (
+                        <div className="auth-error" style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                            Too many failed login attempts. Please wait {blockCount} second{blockCount === 1 ? '' : 's'}.
+                        </div>
+                    )}
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem', padding: '0.75rem' }} disabled={loading || blockCount > 0}>
                         {loading ? 'Authenticating...' : 'Sign In'}
                     </button>
                     

@@ -6,20 +6,23 @@ import api from '../api/axios';
 import { v4 as uuidv4 } from 'uuid'; // for idempotency
 import { AlertCircle, BookText } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { useToast } from '../context/ToastContext';
+import { API_ENDPOINTS, MESSAGES } from '../constants';
 
 const Dashboard = () => {
     const [notes, setNotes] = useState([]);
     const [currentNote, setCurrentNote] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { success, error: showError } = useToast();
 
     const fetchNotes = async () => {
         try {
             setLoading(true);
-            const { data } = await api.get('/notes');
+            const { data } = await api.get(API_ENDPOINTS.NOTES);
             setNotes(data);
         } catch (err) {
-            setError(err.response?.data?.error || 'Failed to fetch notes');
+            setError(err.response?.data?.error || MESSAGES.FETCH_ERROR);
         } finally {
             setLoading(false);
         }
@@ -35,53 +38,29 @@ const Dashboard = () => {
         try {
             if (noteData.id) {
                 // Update
-                const { data } = await api.put(`/notes/${noteData.id}`, {
+                const { data } = await api.put(API_ENDPOINTS.NOTE_BY_ID(noteData.id), {
                     title: noteData.title,
                     content: noteData.content,
                     version: noteData.version
                 });
                 setNotes(notes.map((n) => (n.id === data.id ? data : n)));
                 setCurrentNote(null);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Note Updated!',
-                    text: 'Your note has been saved.',
-                    showCloseButton: true,
-                    showCancelButton: true,
-                    cancelButtonText: 'Close',
-                    confirmButtonText: 'Great'
-                });
+                success(MESSAGES.NOTE_UPDATED);
             } else {
                 // Create with idempotency key
                 const idempotencyKey = uuidv4();
-                const { data } = await api.post('/notes', 
+                const { data } = await api.post(API_ENDPOINTS.NOTES, 
                     { title: noteData.title, content: noteData.content },
                     { headers: { 'Idempotency-Key': idempotencyKey } }
                 );
                 
                 setNotes([...notes, data]);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Note Created!',
-                    text: 'Your new note has been added.',
-                    showCloseButton: true,
-                    showCancelButton: true,
-                    cancelButtonText: 'Close',
-                    confirmButtonText: 'Awesome'
-                });
+                success(MESSAGES.NOTE_CREATED);
             }
         } catch (err) {
-            const msg = err.response?.data?.error || 'Failed to save note';
+            const msg = err.response?.data?.error || MESSAGES.SAVE_ERROR;
             setError(msg);
-            Swal.fire({
-                icon: 'error',
-                title: 'Save Failed',
-                text: msg,
-                showCloseButton: true,
-                showCancelButton: true,
-                cancelButtonText: 'Close',
-                confirmButtonText: 'Try Again'
-            });
+            showError(msg);
         }
     };
 
@@ -101,29 +80,13 @@ const Dashboard = () => {
         if (!result.isConfirmed) return;
         
         try {
-            await api.delete(`/notes/${id}`);
+            await api.delete(API_ENDPOINTS.NOTE_BY_ID(id));
             setNotes(notes.filter((n) => n.id !== id));
-            Swal.fire({
-                icon: 'success',
-                title: 'Deleted!',
-                text: 'Your note has been deleted.',
-                showCloseButton: true,
-                showCancelButton: true,
-                cancelButtonText: 'Close',
-                confirmButtonText: 'OK'
-            });
+            success(MESSAGES.NOTE_DELETED);
         } catch (err) {
-            const msg = err.response?.data?.error || 'Failed to delete note';
+            const msg = err.response?.data?.error || MESSAGES.DELETE_ERROR;
             setError(msg);
-            Swal.fire({
-                icon: 'error',
-                title: 'Delete Failed',
-                text: msg,
-                showCloseButton: true,
-                showCancelButton: true,
-                cancelButtonText: 'Close',
-                confirmButtonText: 'Try Again'
-            });
+            showError(msg);
         }
     };
 

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import { useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -37,23 +38,25 @@ const AuthWatcher = () => {
 
 function App() {
     return (
-        <AuthProvider>
-            <Router>
-                <AuthWatcher />
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route 
-                        path="/" 
-                        element={
-                            <RequireAuth>
-                                <Dashboard />
-                            </RequireAuth>
-                        } 
-                    />
-                </Routes>
-            </Router>
-        </AuthProvider>
+        <ToastProvider>
+            <AuthProvider>
+                <Router>
+                    <AuthWatcher />
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route 
+                            path="/" 
+                            element={
+                                <RequireAuth>
+                                    <Dashboard />
+                                </RequireAuth>
+                            } 
+                        />
+                    </Routes>
+                </Router>
+            </AuthProvider>
+        </ToastProvider>
     );
 }
 
