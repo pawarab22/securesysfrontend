@@ -100,17 +100,24 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="animate-fade-in" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div className="animate-fade-in" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            <div className="bg-blobs">
+                <div className="blob blob-1"></div>
+                <div className="blob blob-2"></div>
+            </div>
+
             <Navbar />
+            
             <main className="container dashboard" style={{ flexGrow: 1 }}>
-                
                 {error && (
-                    <div className="auth-error" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
-                        <AlertCircle size={20} />
-                        {error}
+                    <div className="auth-error glass animate-fade-in" style={{ marginBottom: '2.5rem', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <AlertCircle size={20} />
+                            <span>{error}</span>
+                        </div>
                         <button 
-                            className="btn" 
-                            style={{ marginLeft: 'auto', padding: '0.2rem 0.5rem', background: 'transparent', border: '1px solid var(--danger-color)', color: 'var(--danger-color)' }}
+                            className="btn btn-secondary" 
+                            style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem' }}
                             onClick={() => setError(null)}
                         >
                             Dismiss
@@ -118,42 +125,67 @@ const Dashboard = () => {
                     </div>
                 )}
 
-                <NoteForm 
-                    currentNote={currentNote} 
-                    onSave={handleSaveNote} 
-                    onCancel={handleCancelEdit} 
-                />
+                <div className="dashboard-content">
+                    <NoteForm 
+                        currentNote={currentNote} 
+                        onSave={handleSaveNote} 
+                        onCancel={handleCancelEdit} 
+                    />
 
-                <div className="dashboard-header">
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>Your Notes</h2>
-                    <span style={{ color: 'var(--text-secondary)' }}>
-                        {notes.length} {notes.length === 1 ? 'Note' : 'Notes'}
-                    </span>
+                    <div className="dashboard-header" style={{ marginTop: '4rem' }}>
+                        <div>
+                            <h2 style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Your Notes</h2>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', marginTop: '0.25rem' }}>
+                                Manage your secured personal snippets
+                            </p>
+                        </div>
+                        <div className="glass" style={{ padding: '0.5rem 1rem', borderRadius: '2rem', fontSize: '0.875rem', fontWeight: 600 }}>
+                            {notes.length} {notes.length === 1 ? 'Note' : 'Notes'}
+                        </div>
+                    </div>
+
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-secondary)' }}>
+                            <div className="spinner" style={{ marginBottom: '1rem' }}></div>
+                            <p>Fetching your workspace...</p>
+                        </div>
+                    ) : notes.length > 0 ? (
+                        <div className="notes-grid">
+                            {notes.map((note) => (
+                                <NoteItem 
+                                    key={note.id} 
+                                    note={note} 
+                                    onDelete={handleDeleteNote} 
+                                    onEdit={handleEditNote} 
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="glass" style={{ textAlign: 'center', padding: '6rem 2rem', borderRadius: '1.5rem', color: 'var(--text-secondary)', borderStyle: 'dashed', borderWidth: '2px' }}>
+                            <div style={{ 
+                                background: 'rgba(255,255,255,0.03)', 
+                                width: '80px', 
+                                height: '80px', 
+                                borderRadius: '50%', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                margin: '0 auto 1.5rem'
+                            }}>
+                                <BookText size={40} style={{ opacity: 0.4 }} />
+                            </div>
+                            <h3 style={{ color: 'var(--text-primary)', fontSize: '1.25rem', marginBottom: '0.5rem' }}>Your workspace is empty</h3>
+                            <p style={{ fontSize: '1rem', maxWidth: '400px', margin: '0 auto' }}>
+                                Start by creating your first secure note using the form above.
+                            </p>
+                        </div>
+                    )}
                 </div>
-
-                {loading ? (
-                    <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
-                        Loading notes...
-                    </div>
-                ) : notes.length > 0 ? (
-                    <div className="notes-grid">
-                        {notes.map((note) => (
-                            <NoteItem 
-                                key={note.id} 
-                                note={note} 
-                                onDelete={handleDeleteNote} 
-                                onEdit={handleEditNote} 
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="glass" style={{ textAlign: 'center', padding: '4rem 2rem', borderRadius: '1rem', color: 'var(--text-secondary)' }}>
-                        <BookText size={48} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-                        <p style={{ fontSize: '1.125rem', marginBottom: '0.5rem' }}>No notes found</p>
-                        <p style={{ fontSize: '0.875rem' }}>Create your first note above to get started.</p>
-                    </div>
-                )}
             </main>
+
+            <footer style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem', borderTop: '1px solid var(--border-color)', marginTop: '4rem' }}>
+                &copy; {new Date().getFullYear()} SecureSys. Professional Note Management.
+            </footer>
         </div>
     );
 };

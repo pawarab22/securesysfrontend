@@ -1,6 +1,6 @@
 import { useAuth } from '../hooks/useAuth';
 import { LogOut, BookText } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Navbar = () => {
@@ -27,16 +27,26 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="navbar glass">
-            <div className="navbar-brand">
-                <BookText size={28} />
-                <span>SecureNotes</span>
-            </div>
+        <nav className="navbar">
+            <Link to="/dashboard" className="navbar-brand">
+                <div className="logo-icon">
+                    <BookText size={20} strokeWidth={2.5} />
+                </div>
+                <span>SecureSys</span>
+            </Link>
             {user && (
                 <div className="navbar-user">
-                    <span>{user.email}</span>
-                    <button onClick={onLogout} className="btn btn-danger" title="Logout" aria-label="Logout" style={{ padding: '0.4rem' }}>
-                        <LogOut size={18} />
+                    <div className="user-info">
+                        <span className="user-email">{user.email}</span>
+                    </div>
+                    <button 
+                        onClick={onLogout} 
+                        className="btn btn-danger" 
+                        title="Logout" 
+                        aria-label="Logout" 
+                        style={{ padding: '0.6rem', borderRadius: '0.5rem' }}
+                    >
+                        <LogOut size={16} />
                     </button>
                 </div>
             )}

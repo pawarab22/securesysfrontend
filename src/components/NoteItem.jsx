@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 
 const NoteItem = ({ note, onDelete, onEdit }) => {
     return (
-        <div className="note-card glass">
+        <div className="note-card glass glass-hover animate-fade-in">
             <h3 className="note-title">{note.title}</h3>
             <div 
                 className="note-content"
@@ -12,8 +12,8 @@ const NoteItem = ({ note, onDelete, onEdit }) => {
             <div className="note-actions">
                 <button 
                     onClick={() => onEdit(note)} 
-                    className="btn"
-                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'var(--text-primary)' }}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.6rem', borderRadius: '0.6rem' }}
                     title="Edit Note"
                     aria-label="Edit note"
                 >
@@ -22,6 +22,7 @@ const NoteItem = ({ note, onDelete, onEdit }) => {
                 <button 
                     onClick={() => onDelete(note.id)} 
                     className="btn btn-danger"
+                    style={{ padding: '0.6rem', borderRadius: '0.6rem' }}
                     title="Delete Note"
                     aria-label="Delete note"
                 >

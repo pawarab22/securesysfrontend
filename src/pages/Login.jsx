@@ -34,7 +34,7 @@ const Login = () => {
         e.preventDefault();
         try {
             await login(email, password);
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             // Error managed by context
         }
@@ -42,25 +42,37 @@ const Login = () => {
 
     return (
         <div className="auth-container">
+            <div className="bg-blobs">
+                <div className="blob blob-1"></div>
+                <div className="blob blob-2"></div>
+            </div>
+            
             <div className="auth-card glass animate-fade-in">
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', color: 'var(--primary-color)' }}>
-                    <Lock size={48} />
+                <div className="brand-icon-large">
+                    <Lock size={40} strokeWidth={2.5} />
                 </div>
-                <h1 className="auth-title">Welcome Back</h1>
-                <p className="auth-subtitle">Sign in to manage your notes securely</p>
                 
-                {error && <div className="auth-error">{error}</div>}
+                <h1 className="auth-title">Welcome Back</h1>
+                <p className="auth-subtitle">Securely access your private workspace</p>
+                
+                {error && (
+                    <div className="auth-error">
+                        <AlertCircle size={18} />
+                        <span>{error}</span>
+                    </div>
+                )}
 
                 <form onSubmit={onSubmit}>
                     <div className="form-group" style={{ textAlign: 'left' }}>
-                        <label className="form-label">Email</label>
+                        <label className="form-label">Email Address</label>
                         <div style={{ position: 'relative' }}>
-                            <Mail size={18} style={{ position: 'absolute', top: '12px', left: '12px', color: 'var(--text-secondary)' }} />
+                            <Mail size={18} style={{ position: 'absolute', top: '50%', left: '1rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                             <input 
                                 type="email" 
                                 className="form-input" 
-                                style={{ paddingLeft: '2.5rem' }}
+                                style={{ paddingLeft: '2.75rem' }}
                                 value={email} 
+                                placeholder="name@example.com"
                                 onChange={(e) => setEmail(e.target.value)} 
                                 required 
                             />
@@ -70,27 +82,32 @@ const Login = () => {
                     <div className="form-group" style={{ textAlign: 'left', marginBottom: '2rem' }}>
                         <label className="form-label">Password</label>
                         <div style={{ position: 'relative' }}>
-                            <Lock size={18} style={{ position: 'absolute', top: '12px', left: '12px', color: 'var(--text-secondary)' }} />
+                            <Lock size={18} style={{ position: 'absolute', top: '50%', left: '1rem', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                             <input 
                                 type={showPassword ? 'text' : 'password'} 
                                 className="form-input" 
-                                style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
+                                style={{ paddingLeft: '2.75rem', paddingRight: '2.75rem' }}
                                 value={password} 
+                                placeholder="••••••••"
                                 onChange={(e) => setPassword(e.target.value)} 
                                 required 
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
+                                className="password-toggle"
                                 style={{
                                     position: 'absolute',
-                                    top: '12px',
-                                    right: '12px',
+                                    top: '50%',
+                                    right: '1rem',
+                                    transform: 'translateY(-50%)',
                                     background: 'none',
                                     border: 'none',
                                     cursor: 'pointer',
-                                    color: 'var(--text-secondary)',
-                                    padding: 0
+                                    color: 'var(--text-muted)',
+                                    padding: 0,
+                                    display: 'flex',
+                                    alignItems: 'center'
                                 }}
                             >
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -99,16 +116,18 @@ const Login = () => {
                     </div>
 
                     {blockCount > 0 && (
-                        <div className="auth-error" style={{ marginBottom: '1rem', textAlign: 'center' }}>
-                            Too many failed login attempts. Please wait {blockCount} second{blockCount === 1 ? '' : 's'}.
+                        <div className="auth-error" style={{ marginBottom: '1.5rem' }}>
+                            <AlertCircle size={18} />
+                            <span>Retry available in {blockCount}s</span>
                         </div>
                     )}
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem', padding: '0.75rem' }} disabled={loading || blockCount > 0}>
-                        {loading ? 'Authenticating...' : 'Sign In'}
+
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1.5rem' }} disabled={loading || blockCount > 0}>
+                        {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
                     </button>
                     
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                        Don't have an account? <Link to="/register" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 500 }}>Create Account</Link>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
+                        New here? <Link to="/register" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 600 }}>Create an account</Link>
                     </p>
                 </form>
             </div>

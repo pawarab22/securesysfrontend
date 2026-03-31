@@ -53,10 +53,10 @@ const NoteForm = ({ currentNote, onSave, onCancel }) => {
     };
 
     return (
-        <div className="glass" style={{ padding: '2rem', borderRadius: '1rem', marginBottom: '2rem' }}>
-            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>
-                {currentNote ? 'Edit Note' : 'Create New Note'}
-            </h2>
+        <div className="glass animate-fade-in" style={{ padding: '2.5rem', borderRadius: '1.5rem', marginBottom: '3rem' }}>
+            <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 600 }}>
+                {currentNote ? 'Modify Your Note' : 'Draft a New Note'}
+            </h3>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
                     <label className="form-label">Note Title</label>
@@ -65,37 +65,41 @@ const NoteForm = ({ currentNote, onSave, onCancel }) => {
                         className="form-input" 
                         value={title} 
                         onChange={(e) => setTitle(e.target.value)} 
-                        placeholder="Enter title"
+                        placeholder="Something memorable..."
                         required 
                         maxLength={VALIDATION.TITLE_MAX_LENGTH}
                     />
-                    <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-                        {title.length}/{VALIDATION.TITLE_MAX_LENGTH}
-                    </small>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.4rem' }}>
+                        <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 500 }}>
+                            {title.length}/{VALIDATION.TITLE_MAX_LENGTH}
+                        </small>
+                    </div>
                 </div>
                 <div className="form-group">
-                    <label className="form-label">Note Content</label>
+                    <label className="form-label">Key Content</label>
                     <textarea 
                         className="form-input" 
-                        rows="4"
+                        rows="5"
                         value={content} 
                         onChange={(e) => setContent(e.target.value)} 
-                        placeholder="Enter note content..."
-                        style={{ resize: 'vertical' }}
+                        placeholder="Capture your thoughts securely..."
+                        style={{ resize: 'vertical', minHeight: '120px' }}
                         maxLength={VALIDATION.CONTENT_MAX_LENGTH}
                     ></textarea>
-                    <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-                        {content.length}/{VALIDATION.CONTENT_MAX_LENGTH}
-                    </small>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.4rem' }}>
+                        <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 500 }}>
+                            {content.length}/{VALIDATION.CONTENT_MAX_LENGTH}
+                        </small>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
                     {currentNote && (
-                        <button type="button" className="btn" onClick={onCancel} style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'var(--text-primary)' }}>
-                            Cancel
+                        <button type="button" className="btn btn-secondary" onClick={onCancel}>
+                            Cancel Edit
                         </button>
                     )}
                     <button type="submit" className="btn btn-primary">
-                        {currentNote ? 'Update Note' : 'Add Note'}
+                        {currentNote ? 'Save Changes' : 'Create Secure Note'}
                     </button>
                 </div>
             </form>

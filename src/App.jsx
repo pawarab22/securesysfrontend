@@ -20,6 +20,18 @@ const RequireAuth = ({ children }) => {
     return children;
 };
 
+const PublicRoute = ({ children }) => {
+    const { user } = useAuth();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/dashboard';
+
+    if (user) {
+        return <Navigate to={from} replace />;
+    }
+
+    return children;
+};
+
 const AuthWatcher = () => {
     const { logout } = useAuth();
     
@@ -43,16 +55,37 @@ function App() {
                 <Router>
                     <AuthWatcher />
                     <Routes>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
+                        {/* Redir root to Dashboard if logged in, will be handled by RequireAuth if not */}
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
                         <Route 
-                            path="/" 
+                            path="/login" 
+                            element={
+                                <PublicRoute>
+                                    <Login />
+                                </PublicRoute>
+                            } 
+                        />
+                        <Route 
+                            path="/register" 
+                            element={
+                                <PublicRoute>
+                                    <Register />
+                                </PublicRoute>
+                            } 
+                        />
+                        
+                        <Route 
+                            path="/dashboard" 
                             element={
                                 <RequireAuth>
                                     <Dashboard />
                                 </RequireAuth>
                             } 
                         />
+                        
+                        {/* Catch-all route Redirect to Home */}
+                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                 </Router>
             </AuthProvider>
