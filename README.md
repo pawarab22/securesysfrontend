@@ -1,65 +1,104 @@
-# React + Vite
+# SecureSys Frontend 🛡️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, secure note-taking workspace built with **React** and **Vite**. This application focuses on high-security standards, modern UX, and a professional-grade design system.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Quick Start
 
-## React Compiler
+### 1. Prerequisites
+- **Node.js** (v18+)
+- **npm** or **yarn**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. Installation
+```bash
+# Clone the repository
+git clone <repository-url>
+cd securesysfrontend
 
-## Expanding the ESLint configuration
+# Install dependencies
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 3. Environment Setup
+Create a `.env` file in the root directory:
+```env
+VITE_API_URL=http://your-backend-api-url
+```
 
-## Frontend Implementation and Setup Guide
+### 4. Development
+```bash
+# Start the dev server with HMR
+npm run dev
+```
+The application will launch at `http://localhost:5173`.
 
-### Overview
-This frontend application is built with React and Vite, providing a note-taking interface with user authentication. It includes features for creating, viewing, and managing notes, along with login and registration functionality.
+---
 
-### Project Structure
-- `src/components/`: Reusable UI components (Navbar, NoteForm, NoteItem)
-- `src/pages/`: Main application pages (Dashboard, Login, Register)
-- `src/context/`: React context for authentication (AuthContext)
-- `src/hooks/`: Custom hooks (useAuth)
-- `src/api/`: API configuration (axios setup)
-- `public/`: Static assets
+## 🏗️ Architecture Overview
 
-### Setup Instructions
-1. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
+The system is designed with a **Separation of Concerns (SoC)** principle:
 
-2. **Start Development Server**:
-   ```bash
-   npm run dev
-   ```
-   The application will be available at `http://localhost:5173` (default Vite port).
+- **State Management**: Uses the **React Context API** (`AuthContext`, `ToastContext`) for global authentication and notification state.
+- **Routing**: **React Router v6** with intelligent routing wrappers (`RequireAuth`, `PublicRoute`) for state-aware navigation.
+- **API Layer**: Centralized **Axios** instance with interceptors for token attachment and standardized error handling.
+- **Design System**: A custom **Premium Dark System** built with Vanilla CSS, leveraging CSS Variables for consistency and performance.
+- **Icons**: **Lucide React** for lightweight, consistent iconography.
 
-3. **Build for Production**:
-   ```bash
-   npm run build
-   ```
+---
 
-4. **Preview Production Build**:
-   ```bash
-   npm run preview
-   ```
+## 🔐 Security Considerations Implemented
 
-### Features
-- **Authentication**: Login and register pages with context-based state management
-- **Dashboard**: View and manage personal notes
-- **Note Management**: Create new notes using the NoteForm component, display notes with NoteItem
-- **Responsive UI**: Built with React components and CSS for a clean interface
+Security is the core pillar of **SecureSys**. The following measures are implemented:
 
-### API Integration
-The app uses Axios for API calls, configured in `src/api/axios.js`. Ensure the backend API is running and update the base URL if necessary.
+### 1. Route Guarding
+- **`RequireAuth`**: Prevents unauthenticated access to the dashboard and workspace.
+- **`PublicRoute`**: Redirects logged-in users away from authentication pages (`/login`, `/register`) to prevent session confusion.
 
-### Development Notes
-- Hot Module Replacement (HMR) is enabled for fast development
-- ESLint is configured for code quality
-- The app uses modern React features and hooks for state management
+### 2. Authentication Integrity
+- **JWT Storage**: Securely persistence of authentication state via `localStorage`.
+- **Cross-Tab Syncing**: An `AuthWatcher` listener ensures that logging out in one tab immediately logs out all other open tabs, preventing stale sessions.
+
+### 3. Defensive API Interaction
+- **Idempotency**: Implements **Idempotency Keys** (UUID v4) for note creation to prevent duplicate entries from network retries.
+- **Rate Limit Awareness**: Frontend support for login attempt tracking and lock-out timers.
+
+### 4. Client-Side Protection
+- **XSS Prevention**: All user-generated content (Note content) is sanitized using **DOMPurify** before rendering with `dangerouslySetInnerHTML`.
+- **CSRF Awareness**: Standard Axios configurations are used to ensure secure request headers.
+
+---
+
+## ✨ Features & UX
+
+- **Premium UI**: Custom-built with glassmorphism, background animated blobs, and a refined color palette.
+- **Optimized Performance**: Built on **Vite** for near-instant cold starts and hot module replacement.
+- **Robust Feedback**: Integrated **SweetAlert2** for critical confirmations and a custom Toast system for non-blocking notifications.
+- **Responsive Design**: Fully adaptive layout for desktop, tablet, and mobile screens.
+
+---
+
+## 📁 Directory Structure
+
+```text
+src/
+├── api/          # Axios configuration and API endpoints
+├── components/   # Reusable UI components (Navbar, NoteForm, NoteItem)
+├── constants/    # App-wide constants and message strings
+├── context/      # Global state providers (Auth, Toast)
+├── hooks/        # Custom utility hooks (useAuth)
+├── pages/        # Main route views (Dashboard, Login, Register)
+└── assets/       # Global styles and static assets
+```
+
+---
+
+## 🛠️ Build & Deployment
+
+```bash
+# Build for production (optimized build)
+npm run build
+
+# Preview the production build locally
+npm run preview
+```
